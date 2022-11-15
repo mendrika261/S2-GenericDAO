@@ -3,24 +3,36 @@ package display;
 import database.core.*;
 import test.Student;
 
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Database database = Config.getPgDb();
         DBConnection dbConnection = database.createConnection();
 
-        Student student = new Student("azerty", 321);
+        /* objet de test */
+        Student student = new Student("mendrika", 100);
+
+        // creer la table student
         student.createTable(dbConnection);
-        Student student1 = (Student) student.getById(dbConnection, "TEST000003");
+
+        // sauvegarder dans la table
         student.save(dbConnection);
 
-        List<Object> list = student.getAll(dbConnection);
-        for(Object object:list) {
-            System.out.println(((Student)object).getId());
-            System.out.println(((Student)object).getName());
-            System.out.println(((Student)object).getMark());
-        }
+        // supprimer dans la table
+        student.setId("sequence id no eto");
+        student.delete(dbConnection);
+
+        // update dans la table
+        student.setId("sequence id no eto");
+        student.update(dbConnection);
+
+        // select
+        Student object = new Student();
+        // raha objet ray no alaina
+        Student getOneObject = (Student) object.get(dbConnection, "condition no eto oh: mark>=10");
+        // raha objet maromaro no alaina
+        object.getAll(dbConnection, "condition koa no eto"); // mamerina List<Object>
+        object.getAll(dbConnection); // raha maka ny objet rehetra tsisy condition
 
         dbConnection.commit();
         dbConnection.close();
