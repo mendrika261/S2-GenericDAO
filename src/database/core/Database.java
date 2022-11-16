@@ -81,6 +81,7 @@ public abstract class Database {
         PreparedStatement preparedStatement = connection.prepareStatement(insertSQL(table, objects.length));
 
         for(int i=0; i<objects.length; i++) {
+            if(objects[i] == null) objects[i] = "";
             if(objects[i].getClass() == Integer.class) {
                 preparedStatement.setInt(i+1, (int) objects[i]);
             } else if (objects[i].getClass() == Double.class) {
