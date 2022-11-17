@@ -36,7 +36,7 @@ public class Oracle extends Database {
                 "        is result varchar2(255);" +
                 "        BEGIN" +
                 "            return prefix || lpad(seq, length, '0');" +
-                "        end";
+                "        end;";
     }
 
     /** List of corresponding sql type with java */
