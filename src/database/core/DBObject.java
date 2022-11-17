@@ -33,7 +33,6 @@ public class DBObject {
     }
 
     public void update(DBConnection dbConnection) throws SQLException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NotIdentifiedInDatabaseException {
-        if(getId() == null) throw new NotIdentifiedInDatabaseException(this);
         update(dbConnection,"id='"+getId()+"'");
     }
 
@@ -42,7 +41,6 @@ public class DBObject {
     }
 
     public void delete(DBConnection dbConnection) throws SQLException, NotIdentifiedInDatabaseException {
-        if(getId() == null) throw new NotIdentifiedInDatabaseException(this);
         delete(dbConnection, "id='"+getId()+"'");
     }
 
@@ -70,7 +68,8 @@ public class DBObject {
         this.id = id;
     }
 
-    public String getId() {
+    public String getId() throws NotIdentifiedInDatabaseException {
+        if(id == null) throw new NotIdentifiedInDatabaseException(this);
         return id;
     }
 }

@@ -54,6 +54,7 @@ public class PostgreSQL extends Database {
             case "double" -> "DOUBLE PRECISION";
             case "Date" -> "DATE";
             case "Timestamp" -> "TIMESTAMP";
+            case "boolean" -> "BOOL";
             default -> throw new AttributeTypeNotExistingException(field, this);
         };
     }
@@ -64,7 +65,7 @@ public class PostgreSQL extends Database {
         /* Corresponding sql for create a table */
         StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(name).append(" (");
         for(Field field: fields)
-            sql.append(field.getName()).append(" ").append(getSqlType(field)).append(",");
+            sql.append("\"").append(field.getName()).append("\"").append(" ").append(getSqlType(field)).append(",");
         return sql.deleteCharAt(sql.lastIndexOf(",")).append(")").toString();
     }
 
@@ -87,7 +88,7 @@ public class PostgreSQL extends Database {
     public String updateSQL(String table, String condition, Affectation... affectations) {
         StringBuilder sql = new StringBuilder("UPDATE ").append(table).append(" SET ");
         for(Affectation affectation:affectations)
-            sql.append(affectation.getColumn()).append(" ").append("=").append(" ").append("?").append(",");
+            sql.append("\"").append(affectation.getColumn()).append("\"").append(" ").append("=").append(" ").append("?").append(",");
         return sql.deleteCharAt(sql.lastIndexOf(",")).append(" WHERE ").append(condition).toString();
     }
 

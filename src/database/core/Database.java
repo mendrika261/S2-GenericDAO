@@ -79,13 +79,14 @@ public abstract class Database {
 
     public void insert(Connection connection, String table, Object... objects) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         PreparedStatement preparedStatement = connection.prepareStatement(insertSQL(table, objects.length));
-
         for(int i=0; i<objects.length; i++) {
             if(objects[i] == null) objects[i] = "";
             if(objects[i].getClass() == Integer.class) {
                 preparedStatement.setInt(i+1, (int) objects[i]);
             } else if (objects[i].getClass() == Double.class) {
                 preparedStatement.setDouble(i+1, (double) objects[i]);
+            } else if (objects[i].getClass() == Boolean.class) {
+                preparedStatement.setBoolean(i+1, (boolean) objects[i]);
             } else {
                 Method statementSetter = PreparedStatement.class.getDeclaredMethod("set" + objects[i].getClass().getSimpleName(), int.class, objects[i].getClass());
                 statementSetter.invoke(preparedStatement, i+1, objects[i]);
@@ -116,10 +117,13 @@ public abstract class Database {
         PreparedStatement preparedStatement = connection.prepareStatement(updateSQL(table, condition, affectations));
 
         for(int i=0; i<affectations.length; i++) {
+            if(affectations[i].getValue() == null) affectations[i].setValue("");
             if(affectations[i].getValue().getClass() == Integer.class) {
                 preparedStatement.setInt(i+1, (int) affectations[i].getValue());
             } else if (affectations[i].getValue().getClass() == Double.class) {
                 preparedStatement.setDouble(i+1, (double) affectations[i].getValue());
+            } else if (affectations[i].getValue().getClass() == Boolean.class) {
+                preparedStatement.setBoolean(i+1, (boolean) affectations[i].getValue());
             } else {
                 Method statementSetter = PreparedStatement.class.getDeclaredMethod("set" + affectations[i].getValue().getClass().getSimpleName(), int.class, affectations[i].getValue().getClass());
                 statementSetter.invoke(preparedStatement, i+1, affectations[i].getValue());
