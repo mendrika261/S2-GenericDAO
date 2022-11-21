@@ -51,7 +51,7 @@ public class PostgreSQL extends Database {
         return switch (field.getType().getSimpleName()) {
             case "String" -> "TEXT";
             case "int" -> "INTEGER";
-            case "double" -> "DOUBLE PRECISION";
+            case "double", "Double" -> "DOUBLE PRECISION";
             case "Date" -> "DATE";
             case "Timestamp" -> "TIMESTAMP";
             case "boolean" -> "BOOL";
@@ -63,7 +63,7 @@ public class PostgreSQL extends Database {
     @Override
     public String createTableSQL(String name, Field[] fields) throws AttributeTypeNotExistingException {
         /* Corresponding sql for create a table */
-        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(name).append(" (");
+        StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append("\"").append(name).append("\"").append(" (");
         for(Field field: fields)
             sql.append("\"").append(field.getName()).append("\"").append(" ").append(getSqlType(field)).append(",");
         return sql.deleteCharAt(sql.lastIndexOf(",")).append(")").toString();
@@ -78,7 +78,7 @@ public class PostgreSQL extends Database {
     /** Insert query with preparedStatement */
     @Override
     public String insertSQL(String table, int valueLength) {
-        StringBuilder sql = new StringBuilder("INSERT INTO ").append(table).append(" VALUES(");
+        StringBuilder sql = new StringBuilder("INSERT INTO ").append("\"").append(table).append("\"").append(" VALUES(");
         for(int i=0; i<valueLength; i++) sql.append('?').append(",");
         return sql.deleteCharAt(sql.lastIndexOf(",")).append(")").toString();
     }
@@ -86,7 +86,7 @@ public class PostgreSQL extends Database {
     /** Update query with preparedStatement */
     @Override
     public String updateSQL(String table, String condition, Affectation... affectations) {
-        StringBuilder sql = new StringBuilder("UPDATE ").append(table).append(" SET ");
+        StringBuilder sql = new StringBuilder("UPDATE ").append("\"").append(table).append("\"").append(" SET ");
         for(Affectation affectation:affectations)
             sql.append("\"").append(affectation.getColumn()).append("\"").append(" ").append("=").append(" ").append("?").append(",");
         return sql.deleteCharAt(sql.lastIndexOf(",")).append(" WHERE ").append(condition).toString();
@@ -95,19 +95,19 @@ public class PostgreSQL extends Database {
     /** Delete query */
     @Override
     public String deleteSQL(String table, String condition) {
-        return "DELETE FROM " + table + " WHERE " + condition;
+        return "DELETE FROM \"" + table + "\" WHERE " + condition;
     }
 
     /** Select respectively one column in a table */
     @Override
     public String selectSQLValue(String column, String table, String condition) {
-        return "SELECT " + column + " AS result FROM " + table + " WHERE " + condition;
+        return "SELECT " + column + " AS result FROM \"" + table + "\" WHERE " + condition;
     }
 
     /** Select all column (to transform into object) */
     @Override
     public String selectSQLObject(String table, String condition) {
-        return "SELECT * FROM " + table + " WHERE " + condition;
+        return "SELECT * FROM \"" + table + "\" WHERE " + condition;
     }
 
     /** Get a sequence value using the getSequence function */
