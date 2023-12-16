@@ -59,3 +59,37 @@ public class DaoConfig {
 
 ### Example of a test file
 See inside the `test` folder
+
+## Repository Tree
+```zsh
+.
+└── src
+    ├── database
+    │   ├── core
+    │   │   ├── Affectation.java
+    │   │   ├── Config.java
+    │   │   ├── DBConnection.java
+    │   │   ├── DBTool.java
+    │   │   ├── Database.java
+    │   │   ├── GenericDAO.java
+    │   │   └── Sequence.java
+    │   ├── exception
+    │   │   ├── SQL
+    │   │   │   ├── AttributeMissingException.java
+    │   │   │   ├── AttributeTypeNotExistingException.java
+    │   │   │   ├── DatabaseSQLException.java
+    │   │   │   └── ObjectNameAlreadyUsed.java
+    │   │   └── object
+    │   │       ├── NotIdentifiedInDatabaseException.java
+    │   │       └── ObjectDatabaseException.java
+    │   └── provider
+    │       ├── Oracle.java
+    │       └── PostgreSQL.java
+    └── test
+        ├── Emp.java
+        ├── Main.java
+        ├── Money.java
+        ├── Plat.java
+        ├── PlatConso.java
+        └── Student.java
+```
