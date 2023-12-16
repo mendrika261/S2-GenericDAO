@@ -52,10 +52,12 @@ public class PostgreSQL extends Database {
             case "String" -> "TEXT";
             case "int" -> "INTEGER";
             case "double", "Double" -> "DOUBLE PRECISION";
-            case "Date" -> "DATE";
-            case "Timestamp" -> "TIMESTAMP";
+            case "Date", "LocalDate" -> "DATE";
+            case "Timestamp", "LocalDateTime" -> "TIMESTAMP";
             case "boolean" -> "BOOL";
-            default -> throw new AttributeTypeNotExistingException(field, this);
+            case "File", "byte[]" -> "BYTEA";
+            case "LocalTime" -> "TIME";
+            default -> throw new AttributeTypeNotExistingException(field);
         };
     }
 

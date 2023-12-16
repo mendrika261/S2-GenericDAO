@@ -16,16 +16,20 @@ public class DBConnection {
         getConnection().commit();
     }
 
-    public void rollback() throws SQLException {
-        getConnection().rollback();
+    public void rollback() {
+        try {
+            getConnection().rollback();
+        } catch (SQLException ignored) {}
     }
 
     public void setAutoCommit(boolean state) throws SQLException {
         getConnection().setAutoCommit(state);
     }
 
-    public void close() throws SQLException {
-        getConnection().close();
+    public void close() {
+        try {
+            getConnection().close();
+        } catch (SQLException ignored) {}
     }
 
     public Database getDatabase() {

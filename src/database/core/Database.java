@@ -7,6 +7,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +90,15 @@ public abstract class Database {
             } else if (objects[i].getClass() == Double.class) {
                 preparedStatement.setDouble(i+1, (double) objects[i]);
             } else if (objects[i].getClass() == Boolean.class) {
-                preparedStatement.setBoolean(i+1, (boolean) objects[i]);
+                preparedStatement.setBoolean(i + 1, (boolean) objects[i]);
+            } else if (objects[i].getClass() == LocalDate.class) {
+                preparedStatement.setDate(i + 1, Date.valueOf((LocalDate) objects[i]));
+            } else if (objects[i].getClass() == LocalDateTime.class) {
+                preparedStatement.setTimestamp(i + 1, Timestamp.valueOf((LocalDateTime) objects[i]));
+            } else if (objects[i].getClass() == LocalTime.class) {
+                preparedStatement.setTime(i + 1, Time.valueOf((LocalTime) objects[i]));
+            } else if (objects[i].getClass() == byte[].class) {
+                preparedStatement.setBytes(i + 1, (byte[]) objects[i]);
             } else {
                 Method statementSetter = PreparedStatement.class.getDeclaredMethod("set" + objects[i].getClass().getSimpleName(), int.class, objects[i].getClass());
                 statementSetter.invoke(preparedStatement, i+1, objects[i]);
@@ -124,6 +136,14 @@ public abstract class Database {
                 preparedStatement.setDouble(i+1, (double) affectations[i].getValue());
             } else if (affectations[i].getValue().getClass() == Boolean.class) {
                 preparedStatement.setBoolean(i+1, (boolean) affectations[i].getValue());
+            } else if (affectations[i].getValue().getClass() == LocalDate.class) {
+                preparedStatement.setDate(i+1, Date.valueOf((LocalDate) affectations[i].getValue()));
+            } else if (affectations[i].getValue().getClass() == LocalDateTime.class) {
+                preparedStatement.setTimestamp(i+1, Timestamp.valueOf((LocalDateTime) affectations[i].getValue()));
+            } else if (affectations[i].getValue().getClass() == LocalTime.class) {
+                preparedStatement.setTime(i+1, Time.valueOf((LocalTime) affectations[i].getValue()));
+            } else if (affectations[i].getValue().getClass() == byte[].class) {
+                preparedStatement.setBytes(i+1, (byte[]) affectations[i].getValue());
             } else {
                 Method statementSetter = PreparedStatement.class.getDeclaredMethod("set" + affectations[i].getValue().getClass().getSimpleName(), int.class, affectations[i].getValue().getClass());
                 statementSetter.invoke(preparedStatement, i+1, affectations[i].getValue());
@@ -180,8 +200,27 @@ public abstract class Database {
                 } catch (NoSuchMethodException ignored) {
                     objectSetter = object.getDeclaredMethod("set" + DBTool.upperFirst(field.getName()), field.getType());
                 }
-                Method resultGetType = ResultSet.class.getDeclaredMethod("get"+ DBTool.upperFirst(field.getType().getSimpleName()), String.class);
-                objectSetter.invoke(newObject, resultGetType.invoke(resultSet, field.getName()));
+                Method resultGetType;
+                if (field.getType() == LocalDateTime.class) {
+                    String dateTime = resultSet.getTimestamp(field.getName()).toString().split("\\.")[0];
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    objectSetter.invoke(newObject, LocalDateTime.parse(dateTime, formatter)
+                    );
+                } else if (field.getType() == LocalDate.class) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    resultGetType = ResultSet.class.getDeclaredMethod("getDate", String.class);
+                    objectSetter.invoke(newObject, LocalDate.parse(resultGetType.invoke(resultSet, field.getName()).toString(), formatter));
+                } else if (field.getType() == LocalTime.class) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                    resultGetType = ResultSet.class.getDeclaredMethod("getTime", String.class);
+                    objectSetter.invoke(newObject, LocalTime.parse(resultGetType.invoke(resultSet, field.getName()).toString(), formatter));
+                } else if (field.getType() == byte[].class) {
+                    resultGetType = ResultSet.class.getDeclaredMethod("getBytes", String.class);
+                    objectSetter.invoke(newObject, resultGetType.invoke(resultSet, field.getName()));
+                } else {
+                    resultGetType = ResultSet.class.getDeclaredMethod("get" + DBTool.upperFirst(field.getType().getSimpleName()), String.class);
+                    objectSetter.invoke(newObject, resultGetType.invoke(resultSet, field.getName()));
+                }
             }
             results.add(newObject);
             limitCount++;

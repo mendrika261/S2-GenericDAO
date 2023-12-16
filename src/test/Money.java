@@ -1,9 +1,10 @@
 package test;
 
 
-import database.core.DBObject;
+import database.core.GenericDAO;
 
-public class Money extends DBObject {
+
+public class Money extends GenericDAO {
     int value;
     String name;
 

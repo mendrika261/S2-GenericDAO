@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
-public class DBObject {
+public class GenericDAO {
     String id;
 
     public void createTable(DBConnection dbConnection) throws SQLException, AttributeTypeNotExistingException, AttributeMissingException {
